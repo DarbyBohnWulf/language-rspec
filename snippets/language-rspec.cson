@@ -1,34 +1,59 @@
 '.source.ruby.rspec':
+  'allow (Spy)':
+    'prefix': 'alw'
+    'body': 'allow(${1:subject}).to receive(${2::message})$0'
   'describe (String)':
     'prefix': 'des'
-    'body': "describe '${1:subject}' do\n  $0\nend"
+    'body': """
+      describe '${1:subject}' do
+        $0
+      end
+    """
   'describe (type)':
     'prefix': 'dest'
-    'body': 'describe ${1:Type} do\n  $0\nend'
+    'body': """
+      describe ${1:Type} do
+        $0
+      end
+    """
   'describe (type, string)':
     'prefix': 'dests'
-    'body': "describe ${1:Type}, '${2:description}' do\n  $0\nend"
-  'it (does something)':
+    'body': """
+      describe ${1:Type}, '{2:description}' do
+        $0
+      end
+    """
+  'it (does_something)':
     'prefix': 'it'
-    'body': "it '${1:does something}'${2: do\n  $0\nend}"
+    'body': """
+      it '${1:does_something}' ${2:do
+        $0
+      end}
+    """
   'it (should do something)':
     'prefix': 'iti'
-    'body': "it { should ${1:matcher} }"
+    'body': 'it {should ${1:matcher} }'
   'it (is expected to do something)':
-    'prefix': 'itis'
-    'body': "it { is_expected.to ${1:matcher} }"
+    'prefix': 'ite'
+    'body': 'it { is_expected.to ${1:matcher} }'
   'Matcher (Custom)':
     'prefix': 'matc'
     'body': 'class ${1:ReverseTo}\n  def initialize($3)\n    @$3 = $3\n  end\n\n  def matches?(actual)\n    @actual = actual\n    # Satisfy expectation here. Return false or raise an error if it\'s not met.\n    ${0:@actual.reverse.should == @$3}\n    true\n  end\n\n  def failure_message_for_should\n    "expected #{@actual.inspect} to $2 #{@$3.inspect}, but it didn\'t"\n  end\n\n  def failure_message_for_should_not\n    "expected #{@actual.inspect} not to $2 #{@$3.inspect}, but it did"\n  end\nend\n\ndef ${2:reverse_to}(${3:expected})\n  $1.new($3)\nend'
   'Matcher (DSL)':
     'prefix': 'mat'
-    'body': 'RSpec::Matchers.define :${1:name} do |${2:expected}|\n  match do |${3:actual}|\n    $3.$1?($2)\n  end\nend\n'
+    'body': """
+      RSpec::Matchers.define :${1:name} do |${2:expected}|
+        match do |${3:actual}|
+          $3.$1?($2)
+        end
+      end
+    """
   'Require spec_helper':
     'prefix': 'reqs'
-    'body': 'require \'spec_helper\'\n\n'
+    'body': 'require \'spec_helper\'\n'
   'Require rails_helper':
     'prefix': 'reqr'
-    'body': 'require \'rails_helper\'\n\n'
+    'body': 'require \'rails_helper\'\n'
   'controller_name':
     'prefix': 'conn'
     'body': 'controller_name :${1:controller}'
@@ -61,151 +86,192 @@
     'body': 'change { $1 }'
   'configure':
     'prefix': 'cnf'
-    'body': 'RSpec.configure do |config|\n  config.$0\nend'
+    'body': """
+      RSpec.configure do |config|
+        config.$0
+      end
+    """
   'context':
-    'prefix': 'con'
-    'body': "context '${1:context}' do\n  $0\nend"
+    'prefix': 'cont'
+    'body': """
+      context '${1:context}' do
+        {$0}
+      end
+    """
   'describe (Controller)':
     'prefix': 'desc'
-    'body': 'require File.expand_path(File.dirname(__FILE__) + \'/../spec_helper\')\n\ndescribe ${1:controller} do\n  $0\nend'
+    'body': """
+      require File.expand_path(File.dirname(__FILE__) + \'/../spec_helper\')\n\n      describe ${1:controller} do
+        $0
+      end
+    """
   'describe (RESTful Controller)':
     'prefix': 'desrc'
-    'body': "describe ${1:controller}, '${2:GET|POST|PUT|DELETE} ${3:/some/path}${4: with some parameters}' do\n  $0\nend"
+    'body': """
+      describe ${1:controller}, '${2:GET|POST|PUT|DELETE} ${3:/some/path}${4: with some parameters}' do
+        $0
+      end
+    """
   'exactly':
     'prefix': 'ex'
     'body': 'exactly(${1:n}).times'
-  'expect':
+  'expectation':
     'prefix': 'exp'
-    'body': 'expect(${1:subject}).${2:not_}to ${3:${4:eq} ${5:object}}'
-  'expect with block':
+    'body': 'expect(${1:subject}).to ${2:eq}(${3:object})'
+  'negative expectation':
+    'prefix': 'expn'
+    'body': 'expect(${1:subject}).not_to ${2:${3:eq}(${4:object})}'
+  'expectation with block':
     'prefix': 'expb'
+    'body': 'expect { ${1:target} }.to ${2:raise_error}'
+  'negative expectation with block':
+    'prefix': 'expbn'
     'body': 'expect { ${1:target} }.${2:not_}to ${3:raise_error}'
   'feature':
     'prefix': 'sce'
-    'body': "scenario '${1:scenario description}' do\n  $0\nend"
+    'body': """
+      scenario '${1:scenario description}' do
+        $0
+      end
+    """
   'it (should do something)':
     'prefix': 'its'
-    'body': "it 'should ${1:do something}'${2: do\n  $0\nend}"
+    'body': """
+      it 'should ${1:do something}' do
+        $0
+      end
+    """
   'let':
     'prefix': 'let'
     'body': 'let(:${1:instance}) { $0 }'
   'mock':
     'prefix': 'moc'
-    'body': "${1:var} = mock('${2:mock_name}'${3:, :null_object => true})\n$0"
+    'body': """
+      ${1:var} = mock('${2:mock_name}'${3:, :null_object => true})
+      $0
+    """
   'mock_model':
     'prefix': 'mm'
     'body': 'mock_model(${1:model})$0'
   'mock_with':
     'prefix': 'mocw'
-    'body': 'RSpec::Runner.configure do |config|\n\tconfig.mock_with :${0:mocha|flexmock|rr}\nend'
+    'body': """
+      RSpec::Runner.configure do |config|
+        config.mock_with :${0:mocha|flexmock|rr}
+      end
+    """
   'once':
     'prefix': 'on'
     'body': 'once'
   'should be_success':
     'prefix': 'shbs'
-    'body': 'response.should be_success\n$0'
+    'body': 'response.should be_success$0'
   'should_not be_success':
     'prefix': 'shnbs'
-    'body': 'response.should_not be_success\n$0'
+    'body': 'response.should_not be_success$0'
   'before':
     'prefix': 'bef'
-    'body': 'before(${1::each}) do\n  $0\nend'
+    'body': """
+      before(${1::each}) do
+        $0
+      end
+    """
   'should ==':
     'prefix': 'sh='
-    'body': '${1:target}.should == ${2:value}\n$0'
+    'body': '${1:target}.should == ${2:value}'
   'should =~':
     'prefix': 'shm'
-    'body': '${1:target}.should =~ /${2:regexp}/\n$0'
+    'body': '${1:target}.should =~ /${2:regexp}/'
   'should eql':
     'prefix': 'she'
-    'body': '${1:target}.should eql(${2:value})\n$0'
+    'body': '${1:target}.should eql(${2:value})'
   'should be':
     'prefix': 'shb'
-    'body': '${1:target}.should be(${2:result})\n$0'
+    'body': '${1:target}.should be(${2:result})'
   'should be_kind_of':
     'prefix': 'shbko'
-    'body': '${1:target}.should be_a_kind_of(${2:klass})\n$0'
+    'body': '${1:target}.should be_a_kind_of(${2:klass})'
   'should be_instance_of':
     'prefix': 'shbio'
-    'body': '${1:target}.should be_instance_of(${2:klass})\n$0'
+    'body': '${1:target}.should be_instance_of(${2:klass})'
   'should be_close':
     'prefix': 'shbc'
-    'body': '${1:target}.should be_close(${2:result}, ${3:tolerance})\n$0'
+    'body': '${1:target}.should be_close(${2:result}, ${3:tolerance})'
   'should be_redirect':
     'prefix': 'shbr'
-    'body': 'response.should be_redirect\n$0'
+    'body': 'response.should be_redirect'
   'should equal':
     'prefix': 'she'
-    'body': '${1:target}.should equal(${2:value})\n$0'
+    'body': '${1:target}.should equal(${2:value})'
   'should have':
     'prefix': 'shh'
-    'body': '${1:target}.should have(${2:num}).${3:things}\n$0'
+    'body': '${1:target}.should have(${2:num}).${3:things}'
   'should have_at_least':
     'prefix': 'shhal'
-    'body': '${1:target}.should have_at_least(${2:num}).${3:things}\n$0'
+    'body': '${1:target}.should have_at_least(${2:num}).${3:things}'
   'should have_at_most':
     'prefix': 'shham'
-    'body': '${1:target}.should have_at_most(${2:num}).${3:things}\n$0'
+    'body': '${1:target}.should have_at_most(${2:num}).${3:things}'
   'should have_records':
     'prefix': 'shhr'
-    'body': '${1:target}.should have(${2:x}).records\n$0'
+    'body': '${1:target}.should have(${2:x}).records'
   'should match':
     'prefix': 'shm'
-    'body': '${1:target}.should match(/${2:regexp}/)\n$0'
+    'body': '${1:target}.should match(/${2:regexp}/)'
   'should_not ==':
     'prefix': 'shn='
-    'body': '${1:target}.should_not == ${2:value}\n$0'
+    'body': '${1:target}.should_not == ${2:value}'
   'should_not =~':
     'prefix': 'shnm'
-    'body': '${1:target}.should_not =~ /${2:regexp}/\n$0'
+    'body': '${1:target}.should_not =~ /${2:regexp}/'
   'should_not eql':
     'prefix': 'shne'
-    'body': '${1:target}.should_not eql(${2:value})\n$0'
+    'body': '${1:target}.should_not eql(${2:value})'
   'should_not be':
     'prefix': 'shnb'
-    'body': '${1:target}.should_not be(${2:result})\n$0'
+    'body': '${1:target}.should_not be(${2:result})'
   'should_not be_kind_of':
     'prefix': 'shkof'
-    'body': '${1:target}.should_not be_a_kind_of(${2:klass})\n$0'
+    'body': '${1:target}.should_not be_a_kind_of(${2:klass})'
   'should_not be_instance_of':
     'prefix': 'shbio'
-    'body': '${1:target}.should_not be_instance_of(${2:klass})\n$0'
+    'body': '${1:target}.should_not be_instance_of(${2:klass})'
   'should_not be_close':
     'prefix': 'shnbc'
-    'body': '${1:target}.should_not be_close(${2:result}, ${3:tolerance})\n$0'
+    'body': '${1:target}.should_not be_close(${2:result}, ${3:tolerance})'
   'should_not be_redirect':
     'prefix': 'shnbr'
-    'body': 'response.should_not be_redirect\n$0'
+    'body': 'response.should_not be_redirect'
   'should_not equal':
     'prefix': 'shne'
-    'body': '${1:target}.should_not equal(${2:value})\n$0'
+    'body': '${1:target}.should_not equal(${2:value})'
   'should_not match':
     'prefix': 'shnm'
-    'body': '${1:target}.should_not match(/${2:regexp}/)\n$0'
+    'body': '${1:target}.should_not match(/${2:regexp}/)'
   'should_not predicate':
     'prefix': 'shnp'
-    'body': '${1:target}.should_not ${2:be_${3:predicate}} $4\n$0'
+    'body': '${1:target}.should_not ${2:be_${3:predicate}} $4'
   'should_not raise_error':
     'prefix': 'shnre'
-    'body': 'lambda { $1 }.should_not raise_error(${2:error})\n$0'
+    'body': 'lambda { $1 }.should_not raise_error(${2:error})'
   'should_not_receive':
     'prefix': 'shnr'
-    'body': '${1:mock}.should_not_receive(:${2:message})$3\n$0\n'
+    'body': '${1:mock}.should_not_receive(:${2:message})$3'
   'should_not respond_to':
     'prefix': 'shnrt'
-    'body': '${1:target}.should_not respond_to(:${2:sym})\n$0'
+    'body': '${1:target}.should_not respond_to(:${2:sym})'
   'should_not satisfy':
     'prefix': 'shns'
-    'body': '${1:target}.should_not satisfy { |obj| $2 }\n$0'
+    'body': '${1:target}.should_not satisfy { |obj| $2 }'
   'should_not throw':
     'prefix': 'shnt'
-    'body': 'lambda { $1 }.should_not throw_symbol(:${2:symbol})\n$0'
+    'body': 'lambda { $1 }.should_not throw_symbol(:${2:symbol})'
   'should predicate':
     'prefix': 'shp'
-    'body': '${1:target}.should ${2:be_${3:predicate}} $4\n$0'
+    'body': '${1:target}.should ${2:be_${3:predicate}} $4'
   'should raise_error':
     'prefix': 'shre'
-    'body': 'lambda { $1 }.should raise_error(${2:error})\n$0'
+    'body': 'lambda { $1 }.should raise_error(${2:error})'
   'should_receive':
     'prefix': 'shr'
     'body': '${1:mock}.should_receive(:${2:message})$3'
@@ -214,19 +280,19 @@
     'body': 'with(${1})$2'
   'should redirect_to':
     'prefix': 'shrt'
-    'body': 'response.should redirect_to(${1:url})\n$0'
+    'body': 'response.should redirect_to(${1:url})'
   'should render_template':
     'prefix': 'shrt'
-    'body': 'response.should render_template(:${1:template})\n$0'
+    'body': 'response.should render_template(:${1:template})'
   'should respond_to':
     'prefix': 'shrt'
-    'body': '${1:target}.should respond_to(:${2:sym})\n$0'
+    'body': '${1:target}.should respond_to(:${2:sym})'
   'should satisfy':
     'prefix': 'shs'
-    'body': '${1:target}.should satisfy { |obj| $2 }\n$0'
+    'body': '${1:target}.should satisfy { |obj| $2 }'
   'should throw':
     'prefix': 'sht'
-    'body': 'lambda { $1 }.should throw_symbol(:${2:symbol})\n$0'
+    'body': 'lambda { $1 }.should throw_symbol(:${2:symbol})'
   'specify':
     'prefix': 'spec'
     'body': 'specify { ${1:behavior} }'
@@ -238,7 +304,11 @@
     'body': 'subject(:${1:instance}) { $0 }'
   'after':
     'prefix': 'aft'
-    'body': 'after(${1::each}) do\n  $0\nend'
+    'body': """
+      after(${1::each}) do
+        $0
+      end
+    """
   'twice':
     'prefix': 'tw'
     'body': 'twice'
